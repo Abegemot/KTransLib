@@ -1,9 +1,11 @@
-package com.begemot.newspapers
+  package com.begemot.newspapers
 
 import com.begemot.knewscommon.KArticle
 import com.begemot.translib.INewsPaper
 import com.begemot.translib.addStringWithEndPoint
+import org.jsoup.Connection
 import org.jsoup.Jsoup
+import org.jsoup.nodes.Document
 
 object GU: INewsPaper {
     override val olang: String
@@ -23,8 +25,24 @@ object GU: INewsPaper {
     }
 
     override fun getOriginalArticle(slink: String, textsb: StringBuilder):StringBuilder {
-        val doc= Jsoup.connect(slink).get()
+        val con=Jsoup.connect(slink)
+        val resp:Connection.Response=con.execute()
+        var doc:Document?=null
+        if (resp.statusCode() == 200) {
+            doc = con.get();
+        } else{
+
+            println("Guardian error geting original article resp status code = ${resp.statusCode()}")
+            println(resp.statusMessage())
+            println("end Guardian")
+            return textsb
+        }
+
+
+        //val doc= Jsoup.connect(slink).get()
         println(doc.text())
+        //println("html->")
+        //println(doc.html())
 
         val q=doc.select("h1.content__headline ")
 
@@ -45,6 +63,7 @@ object GU: INewsPaper {
         art.forEach{
             addStringWithEndPoint(it.text(), textsb)
         }
+        println("textsb $textsb")
         return textsb
     }
 
