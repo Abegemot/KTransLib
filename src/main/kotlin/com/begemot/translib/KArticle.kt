@@ -11,6 +11,13 @@ import java.net.URLEncoder
 import java.time.LocalDateTime
 //import org.json.JSONArray
 
+fun getOriginalArticle(name:String,link:String):StringBuilder{
+    val sb=StringBuilder()
+    val iNewsPaper= MBAPE.P[name] ?: return sb
+    return iNewsPaper.getOriginalArticle(link,sb)
+}
+
+
 fun getTranslatedArticle(name:String,tlang:String,link:String):List<OriginalTrans>{
     val lOriginalTrans= mutableListOf<OriginalTrans>()
 
@@ -82,6 +89,13 @@ private fun splitLongText(text:StringBuilder):List<String>{
     return resultList
 }
 
+fun translateListStrings2(lOriginal:List<String>, name: String, tlang: String): List<OriginalTrans> {
+    val iNewsPaper= P[name] ?: return emptyList()
+    val olang=iNewsPaper.olang
+    return translateListStrings(lOriginal, olang, tlang)
+}
+
+
 private fun translateListStrings(lOriginal:List<String>, olang: String, tlang: String): List<OriginalTrans> {
     return gettranslatedText(
         lOriginal.joinToString(". "),
@@ -111,6 +125,8 @@ private fun translateListStrings(lOriginal:List<String>, olang: String, tlang: S
     return lOriginal.zip(lTranslated){ a, b->OriginalTrans(a,b.translatedText)}
 }
 fun gettranslatedText(text: String, olang: String,tlang:String):List<OriginalTrans>  {
+    val lOriginalTrans= mutableListOf<OriginalTrans>()
+    if(text.length==0) return lOriginalTrans //????
     val url =
         "https://translate.googleapis.com/translate_a/single?client=gtx&sl=" + "$olang" + "&tl=" + "$tlang" + "&dt=t&q=" + URLEncoder.encode(
             text,
@@ -119,7 +135,8 @@ fun gettranslatedText(text: String, olang: String,tlang:String):List<OriginalTra
     val d = Jsoup.connect(url).ignoreContentType(true).get().text()
     val lTrans=Json(JsonConfiguration.Stable).parseJson(d)
     //println("tlang->$tlang")
-    val lOriginalTrans= mutableListOf<OriginalTrans>()
+
+    if(lTrans.isNull) return lOriginalTrans    // si rebem un text buit la traduccio tambe ho sera millor a lentrada
     val qsm=lTrans.jsonArray[0] as JsonArray
     for(i in 0 until qsm.size){
         val l=qsm.getArray(i)
