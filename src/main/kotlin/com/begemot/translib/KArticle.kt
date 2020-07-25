@@ -11,57 +11,47 @@ import java.net.URLEncoder
 import java.time.LocalDateTime
 //import org.json.JSONArray
 
-fun getOriginalArticle(name:String,link:String):StringBuilder{
+fun getOriginalArticle(name:String,link:String):List<String>{
     val sb=StringBuilder()
-    val iNewsPaper= MBAPE.P[name] ?: return sb
+    val iNewsPaper= MBAPE.P[name] ?: return emptyList()
     return iNewsPaper.getOriginalArticle(link,sb)
 }
 
 
-fun getTranslatedArticle(name:String,tlang:String,link:String):List<OriginalTrans>{
-    val lOriginalTrans= mutableListOf<OriginalTrans>()
+fun  getTranslatedArticle(name:String,tlang:String,link:String):List<OriginalTrans>{
+    var lOriginalTrans: MutableList<OriginalTrans>
 
     val iNewsPaper= P[name] ?: return emptyList()
 
     val olang=iNewsPaper.olang
     val str=StringBuilder()
-    val tOsb=iNewsPaper.getOriginalArticle(link,str)
+    val LA=iNewsPaper.getOriginalArticle(link,str)
 
-    //val tOsb=getOriginalArticle(link)
-    //println("tOsb->${tOsb.toString()}")
-    val LA= splitLongText(tOsb)
-    //println("LA SIZE ${LA.size}")
-    var lasize=0
-    LA.forEach {
-        lasize+=it.length
-      //  println("LA->${it.length} $it")
-        val ls=it.split(". ")
-        lOriginalTrans.addAll(
-            translateListStrings(
-                ls,
-                olang,
-                tlang
-            )
-        )
-    }
-    //println("tosb  ${tOsb.length}  LA  $lasize")
-    //lOriginalTrans.forEach {
-    //    println(it.original)
-    //    println(it.translated)
-    //}
+    lOriginalTrans= translateListOfParagraphs(LA,name,tlang).toMutableList() //!!
+
     return lOriginalTrans
-    //val l= mutableListOf<OriginalTrans>()
-    //return l
+}
+
+fun translateListOfParagraphs(lp:List<String>,namepaper:String,tlang: String):List<OriginalTrans>{
+    println("translateListOfParagraphs ${lp.size}  $namepaper $tlang")
+    val lOriginalTrans= mutableListOf<OriginalTrans>()
+    val iNewsPaper= P[namepaper] ?: return emptyList()
+    val olang=iNewsPaper.olang
+    lp.forEach {
+        lOriginalTrans.addAll(gettranslatedText(it,olang,tlang))
+    }
+    return lOriginalTrans
 }
 
 fun addStringWithEndPoint(str:String, textsb:StringBuilder){
+    val debug=false
     if(str.isEmpty()) return
     textsb.append(str)
-    if(str[str.length-1]=='.')  { println("acaba en punt"); textsb.append(' ') }
-    else { println("no acaba en punt"); textsb.append(". ") }
+    if(str[str.length-1]=='.')  { if(debug) println("acaba en punt"); textsb.append(' ') }
+    else { if(debug) println("no acaba en punt"); textsb.append(". ") }
 }
 
-private fun splitLongText(text:StringBuilder):List<String>{
+fun splitLongText(text:StringBuilder):List<String>{
     val maxlen=3000
     val resultList= mutableListOf<String>()
     var LS = mutableListOf<String>()
@@ -89,41 +79,8 @@ private fun splitLongText(text:StringBuilder):List<String>{
     return resultList
 }
 
-fun translateListStrings2(lOriginal:List<String>, name: String, tlang: String): List<OriginalTrans> {
-    val iNewsPaper= P[name] ?: return emptyList()
-    val olang=iNewsPaper.olang
-    return translateListStrings(lOriginal, olang, tlang)
-}
 
 
-private fun translateListStrings(lOriginal:List<String>, olang: String, tlang: String): List<OriginalTrans> {
-    return gettranslatedText(
-        lOriginal.joinToString(". "),
-        olang,
-        tlang
-    )
-    println("caped translated")
-    val dList= mutableListOf<OriginalTrans>(OriginalTrans("translated article $olang $tlang  ${LocalDateTime.now()}","fake"))
-    return dList
-
-    val apikey="AIzaSyBP1dsYp-jPF6PfVetJWcguNLiFouZ3mjo"
-    val sUrl="https://www.googleapis.com/language/translate/v2?key=$apikey"
-    val x= jsonTrans(lOriginal,olang,tlang)
-    val rq= Json(JsonConfiguration.Stable).stringify(jsonTrans.serializer(),x)
-    //Timber.d("URL: $sUrl")
-    //Timber.d("json: $sjason")
-    val cr= Jsoup.connect(sUrl)
-        .header("Content-Type","application/json")
-        .header("Accept","application/json")
-        //.followRedirects(true)
-        .ignoreContentType(true)
-        .ignoreHttpErrors(true)
-        .method(Connection.Method.POST)
-        .requestBody(rq)
-        .execute()
-    val lTranslated= Json(JsonConfiguration.Stable).parse(Json4Kotlin_Base.serializer(),cr.body()).data.translations
-    return lOriginal.zip(lTranslated){ a, b->OriginalTrans(a,b.translatedText)}
-}
 fun gettranslatedText(text: String, olang: String,tlang:String):List<OriginalTrans>  {
     val lOriginalTrans= mutableListOf<OriginalTrans>()
     if(text.length==0) return lOriginalTrans //????

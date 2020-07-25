@@ -10,7 +10,7 @@ interface INewsPaper{
     val logoName  : String
     // suspend fun getTranslatedArticle(originalTransLink: OriginalTransLink, statusApp: StatusApp):MutableList<OriginalTrans>
     fun getOriginalHeadLines():List<KArticle>
-    fun getOriginalArticle(link:String,strbuild:StringBuilder):StringBuilder
+    fun getOriginalArticle(link:String,strbuild:StringBuilder):List<String> //the article split in 3000 chars pieces
     //fun getlines(lhd: MutableState<MutableList<OriginalTransLink>>, statusApp: StatusApp):Unit=get_HeadLines(lhd,statusApp, ::getHeadLines)
     // fun getName(e:Title):String
     // fun linkToArticleScreen():(otl:OriginalTransLink)->Screens=::FullArticle

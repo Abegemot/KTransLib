@@ -3,6 +3,7 @@
 import com.begemot.knewscommon.KArticle
 import com.begemot.translib.INewsPaper
 import com.begemot.translib.addStringWithEndPoint
+import com.begemot.translib.splitLongText
 import org.jsoup.Connection
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
@@ -24,7 +25,7 @@ object GU: INewsPaper {
 
     }
 
-    override fun getOriginalArticle(slink: String, textsb: StringBuilder):StringBuilder {
+    override fun getOriginalArticle(slink: String, textsb: StringBuilder):List<String> {
         val con=Jsoup.connect(slink)
         val resp:Connection.Response=con.execute()
         var doc:Document?=null
@@ -35,7 +36,7 @@ object GU: INewsPaper {
             println("Guardian error geting original article resp status code = ${resp.statusCode()}")
             println(resp.statusMessage())
             println("end Guardian")
-            return textsb
+            return emptyList()
         }
 
 
@@ -59,12 +60,24 @@ object GU: INewsPaper {
 
         val art=pq.select("p")
         println("paragraf number ${art.size}")
+
+        if(art.size==0){
+            println(" No paragraphs found!! ")
+         //   println(doc.html())
+            println(" No paragraphs found!! ")
+        }else{
+            println("Paragraphs ok")
+         //   println(doc.html())
+            println("Paragraphs ok")
+        }
+
         //val l1=art.map{it.text()}
         art.forEach{
             addStringWithEndPoint(it.text(), textsb)
         }
         println("textsb $textsb")
-        return textsb
+        return splitLongText(textsb)
+
     }
 
 
