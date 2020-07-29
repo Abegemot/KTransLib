@@ -25,6 +25,7 @@ dependencies {
     implementation("com.begemot:knewscommon")
     implementation(kotlin("stdlib-jdk8"))
     implementation("org.jsoup:jsoup")
+    implementation("io.ktor:ktor-client-serialization-jvm")
 }
 
 tasks {

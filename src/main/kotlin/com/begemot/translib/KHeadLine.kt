@@ -1,22 +1,20 @@
 package com.begemot.translib
 
 import com.begemot.knewscommon.*
-import com.begemot.translib.MBAPE
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonConfiguration
 import org.jsoup.Connection
 import org.jsoup.Jsoup
-import java.time.LocalDateTime
 
-fun getOriginalHeadLines(name:String):List<KArticle>{
-    val iNewsPaper= MBAPE.P[name] ?: return emptyList()
+fun getOriginalHeadLines(namepaper:String):List<KArticle>{
+    val iNewsPaper= MBAPE.P[namepaper] ?: throw Exception(" Wrong news paper name!! : $namepaper")
     return iNewsPaper.getOriginalHeadLines()
 }
 
 
-fun getTranslatedHeadLines(name:String,tlang:String):List<OriginalTransLink>{
+fun getTranslatedHeadLines(namepaper:String, tlang:String):List<OriginalTransLink>{
     println("getTranslatedHeadlines 1")
-    val iNewsPaper= MBAPE.P[name] ?: return emptyList()
+    val iNewsPaper= MBAPE.P[namepaper] ?: throw Exception(" Wrong news paper name!! : $namepaper")
     println("getTranslatedHeadlines 2")
     val lHl=iNewsPaper.getOriginalHeadLines()
     println("getTranslatedHeadlines 3 size lhl ${lHl.size}")
@@ -32,11 +30,11 @@ fun getTranslatedHeadLines(name:String,tlang:String):List<OriginalTransLink>{
 
 }
 
-fun translateHeadLines(lA:List<KArticle>,name: String,tlang: String):List<OriginalTransLink>{
-    val dList= mutableListOf<OriginalTransLink>(OriginalTransLink(KArticle("$name$tlang  ${LocalDateTime.now()}"),"fake"))
-    return dList
-    val iNewsPaper= MBAPE.P[name] ?: return emptyList()
-    val js= lKArticlesToJsonForTranslate(lA,iNewsPaper.olang,tlang)
+fun translateHeadLines(lA:List<KArticle>, olang: String, tlang: String):List<OriginalTransLink>{
+    //val dList= mutableListOf<OriginalTransLink>(OriginalTransLink(KArticle("$name$tlang  ${LocalDateTime.now()}"),"fake"))
+    //return dList
+    //val iNewsPaper= MBAPE.P[olang] ?: throw Exception("Wrong name news paper < $olang > translate Headlines or MBAPE down")   //return emptyList()
+    val js= lKArticlesToJsonForTranslate(lA,olang,tlang)
     //  println("js ${js.value}")
     val Z= translateJson(js.value)
     //println("translated json $Z")

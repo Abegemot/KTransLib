@@ -5,38 +5,29 @@ import com.begemot.translib.MBAPE.P
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonConfiguration
-import org.jsoup.Connection
 import org.jsoup.Jsoup
 import java.net.URLEncoder
-import java.time.LocalDateTime
+
 //import org.json.JSONArray
 
-fun getOriginalArticle(name:String,link:String):List<String>{
+fun getOriginalArticle(namepaper:String, link:String):List<String>{
     val sb=StringBuilder()
-    val iNewsPaper= MBAPE.P[name] ?: return emptyList()
+    val iNewsPaper= MBAPE.P[namepaper] ?: throw Exception("Wrong news paper name!! : $namepaper")
     return iNewsPaper.getOriginalArticle(link,sb)
 }
 
 
 fun  getTranslatedArticle(name:String,tlang:String,link:String):List<OriginalTrans>{
-    var lOriginalTrans: MutableList<OriginalTrans>
-
-    val iNewsPaper= P[name] ?: return emptyList()
-
-    val olang=iNewsPaper.olang
-    val str=StringBuilder()
-    val LA=iNewsPaper.getOriginalArticle(link,str)
-
-    lOriginalTrans= translateListOfParagraphs(LA,name,tlang).toMutableList() //!!
-
-    return lOriginalTrans
+     val iNewsPaper= P[name] ?: return emptyList()
+     val str=StringBuilder()
+     val LA=iNewsPaper.getOriginalArticle(link,str)
+   // return emptyList()
+     return translateListOfParagraphs(LA,name,tlang) //!!
 }
 
-fun translateListOfParagraphs(lp:List<String>,namepaper:String,tlang: String):List<OriginalTrans>{
-    println("translateListOfParagraphs ${lp.size}  $namepaper $tlang")
+fun translateListOfParagraphs(lp:List<String>,olang: String,tlang: String):List<OriginalTrans>{
+    println("translateListOfParagraphs ${lp.size}  $olang $tlang")
     val lOriginalTrans= mutableListOf<OriginalTrans>()
-    val iNewsPaper= P[namepaper] ?: return emptyList()
-    val olang=iNewsPaper.olang
     lp.forEach {
         lOriginalTrans.addAll(gettranslatedText(it,olang,tlang))
     }
