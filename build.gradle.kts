@@ -1,6 +1,6 @@
 plugins {
     `java-library`
-    kotlin("jvm") version "1.3.72"
+    kotlin("jvm") version "1.4.0"
 }
 
 group = "com.begemot"
@@ -26,6 +26,7 @@ dependencies {
     implementation(kotlin("stdlib-jdk8"))
     implementation("org.jsoup:jsoup")
     implementation("io.ktor:ktor-client-serialization-jvm")
+    implementation("com.google.cloud:google-cloud-storage")
 }
 
 tasks {

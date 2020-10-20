@@ -2,9 +2,7 @@ package com.begemot.translib
 
 import com.begemot.knewscommon.*
 import com.begemot.translib.MBAPE.P
-import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.JsonArray
-import kotlinx.serialization.json.JsonConfiguration
+import kotlinx.serialization.json.*
 import org.jsoup.Jsoup
 import java.net.URLEncoder
 
@@ -74,6 +72,16 @@ fun splitLongText(text:StringBuilder):List<String>{
 
 fun gettranslatedText(text: String, olang: String,tlang:String):List<OriginalTrans>  {
     val lOriginalTrans= mutableListOf<OriginalTrans>()
+    if(olang.equals(tlang)){
+        val ls=text.split(". ")
+        ls.forEach {
+            val s= "$it. "
+            lOriginalTrans.add(OriginalTrans(s,s))
+        }
+        return lOriginalTrans
+    }
+
+
     if(text.length==0) return lOriginalTrans //????
     val url =
         "https://translate.googleapis.com/translate_a/single?client=gtx&sl=" + "$olang" + "&tl=" + "$tlang" + "&dt=t&q=" + URLEncoder.encode(
@@ -81,20 +89,26 @@ fun gettranslatedText(text: String, olang: String,tlang:String):List<OriginalTra
             "utf-8"
         )
     val d = Jsoup.connect(url).ignoreContentType(true).get().text()
-    val lTrans=Json(JsonConfiguration.Stable).parseJson(d)
-    //println("tlang->$tlang")
+    //val lTrans=Json(JsonConfiguration.Stable).parseJson(d)
+    val lTrans= kjson.parseToJsonElement(d)
+      //println("tlang->$tlang")
 
-    if(lTrans.isNull) return lOriginalTrans    // si rebem un text buit la traduccio tambe ho sera millor a lentrada
+    if(lTrans is JsonNull) return lOriginalTrans    // si rebem un text buit la traduccio tambe ho sera millor a lentrada
     val qsm=lTrans.jsonArray[0] as JsonArray
     for(i in 0 until qsm.size){
-        val l=qsm.getArray(i)
-       // println("uno->${l[1]}")
-       // println("cero->${l[0]}")
-        lOriginalTrans.add(OriginalTrans(l[1].toString(),l[0].toString()))
+        val l= qsm[i].jsonArray
+        val z1=l[1].toString()
+        val z2=z1.subSequence(1,z1.length-1).toString()
+        //println("uno->${l[1]}")
+        //println("cero->${l[0].toString().replace("\\","")}")
+        val s2=l[0].toString().replace("\\","")
+        val s3=s2.subSequence(1,s2.length-1).toString()
+        lOriginalTrans.add(OriginalTrans(z2,s3))
     }
     return lOriginalTrans
 
 }
+
 
 /*
 fun gettranslatedText(text: String, tlang: String,olang:String):MutableList<OriginalTrans>  {

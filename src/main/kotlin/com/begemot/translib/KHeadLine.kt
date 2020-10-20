@@ -2,7 +2,7 @@ package com.begemot.translib
 
 import com.begemot.knewscommon.*
 import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.JsonConfiguration
+//import kotlinx.serialization.json.JsonConfiguration
 import org.jsoup.Connection
 import org.jsoup.Jsoup
 
@@ -31,13 +31,16 @@ fun getTranslatedHeadLines(namepaper:String, tlang:String):List<OriginalTransLin
 }
 
 fun translateHeadLines(lA:List<KArticle>, olang: String, tlang: String):List<OriginalTransLink>{
-    //val dList= mutableListOf<OriginalTransLink>(OriginalTransLink(KArticle("$name$tlang  ${LocalDateTime.now()}"),"fake"))
-    //return dList
-    //val iNewsPaper= MBAPE.P[olang] ?: throw Exception("Wrong name news paper < $olang > translate Headlines or MBAPE down")   //return emptyList()
+    if(olang.equals(tlang)){
+        val lOTL= mutableListOf<OriginalTransLink>()
+        lA.forEach {
+            lOTL.add(OriginalTransLink(it,""))
+            //lOTL.add(OriginalTransLink(it,it.title))
+        }
+        return lOTL
+    }
     val js= lKArticlesToJsonForTranslate(lA,olang,tlang)
-    //  println("js ${js.value}")
     val Z= translateJson(js.value)
-    //println("translated json $Z")
     val lt= JsonToListStrings(Z)
     return lA.zip(lt) { a, c->OriginalTransLink(a,c.translatedText)}
 }
@@ -45,8 +48,10 @@ fun translateHeadLines(lA:List<KArticle>, olang: String, tlang: String):List<Ori
 
 private fun lKArticlesToJsonForTranslate(lA:List<KArticle>, olang:String, tlang:String): JasonString {
     if(lA.size==0) return JasonString("NOP")
-    val x= jsonTrans(lA.map{it.title},olang,tlang)
-    val rq= Json(JsonConfiguration.Stable).stringify(jsonTrans.serializer(),x)
+    val x= jsonTrans(lA.map{it.title},olang,tlang,"text")
+    println("->x<-$x")
+    val rq= kjson.encodeToString(jsonTrans.serializer(),x)
+    println("->rq<-$rq")
     return JasonString(rq)
 }
 
@@ -54,9 +59,9 @@ private fun translateJson(sjason:String): String {
     val apikey="AIzaSyBP1dsYp-jPF6PfVetJWcguNLiFouZ3mjo"
     val sUrl="https://www.googleapis.com/language/translate/v2?key=$apikey"
     //Timber.d("URL: $sUrl")
-    //Timber.d("json: $sjason")
+    println("->json: $sjason")
     val cr= Jsoup.connect(sUrl)
-        .header("Content-Type","application/json")
+        .header("Content-Type","application/json; charset=utf-8")
         .header("Accept","application/json")
         //.followRedirects(true)
         .ignoreContentType(true)
@@ -69,7 +74,9 @@ private fun translateJson(sjason:String): String {
 
 private fun JsonToListStrings(json:String):List<Translations>{
     val ls= mutableListOf<String>()
-    val topic=Json(JsonConfiguration.Stable).parse(Json4Kotlin_Base.serializer(),json)
+    println("zzzzzzzzzzzzzzzzzzzzzzzzz  !!!!!!!!!")
+    println(json)
+    val topic= kjson.decodeFromString(Json4Kotlin_Base.serializer(),json)
     //val topic = Gson().fromJson(json, Json4Kotlin_Base::class.java)
     return topic.data.translations
 }

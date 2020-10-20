@@ -8,27 +8,24 @@ import org.jsoup.Jsoup
 import org.jsoup.nodes.Element
 
 
-object RT : INewsPaper {
+object LV : INewsPaper {
     override val olang: String
-        get() = "ru"
+        get() = "es"
     override val name: String
-        get() = "RT Novesti"
+        get() = "La Vanguardia"
     override val desc: String
-        get() = "Russian News"
+        get() = "Spanish News"
     override val logoName: String
-        get() = "rt-logo.png"
+        get() = "La_Vanguardia.png"
     override val handler: String
-        get() = "RT"
+        get() = "LV"
 
     override fun getOriginalHeadLines(): List<KArticle> {
         fun transFigure(el: Element): KArticle {
-            val title = el.select("h3").text()
-            //val title="["+title1.replace('«','-')
-            // .replace('»','-')
-            // .replace('.',',')
-            // .replace('—',' ')
-            // .replace('?','?')+"]. "
-            val link = el.select("a[href]").first().attr("abs:href")
+            var epi=el.select("span.story-epigraph").text().trim()
+            if(epi.length>0) epi+=". "
+            val title ="${epi}${el.select("a.story-header-title-link").attr("title")}"
+            val link = el.select("a[href]").first().attr("href")
             return KArticle(title, link)
         }
         fun transSection(el: Element): KArticle {
@@ -43,18 +40,20 @@ object RT : INewsPaper {
             return KArticle(title, link)
         }
 
-        val s = "https://russian.rt.com/inotv"
+        val s = "https://www.lavanguardia.com"
         val con= Jsoup.connect(s)
         //con.timeout(6000)
         val doc = con.get()
-        var art = doc.select("figure")
+        println(doc.text())
+        var art = doc.select("header.story-header")
         val l1 = art.map { it -> transFigure(it) }
 
-        art = doc.select("section.block-white.materials-preview").select("article")
-        val l2 = art.map { it -> transSection(it) }
-        return l1 + l2
+        //art = doc.select("section.block-white.materials-preview").select("article")
+        //val l2 = art.map { it -> transSection(it) }
+        //return l1 + l2
+        return l1
 
-  }
+    }
 
     override fun getOriginalArticle(link: String, strbuild: StringBuilder): List<String> {
 

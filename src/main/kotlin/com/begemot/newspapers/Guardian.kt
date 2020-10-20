@@ -13,10 +13,12 @@ import kotlinx.serialization.Serializable
 object GU: INewsPaper {
     override val olang: String
         get() = "en"
-    override val nameFile: String
-        get() = "guardian"
+    override val name: String
+        get() = "The Guardian"
+    override val desc: String
+        get() = "British News"
     override val logoName: String
-        get() = "guardianlogo"
+        get() = "The_Guardian.png"
     override val handler: String
         get() = "GU"
 
