@@ -1,7 +1,7 @@
 package com.begemot.newspapers
 
 import com.begemot.knewscommon.KArticle
-import com.begemot.translib.INewsPaper
+import com.begemot.knewscommon.INewsPaper
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Element
 
@@ -33,14 +33,15 @@ object SZ :INewsPaper{
         return l1
     }
 
-    override fun getOriginalArticle(link: String, strbuild: StringBuilder): List<String> {
+    override fun getOriginalArticle(link: String): List<String> {
+
         fun transArticleintro(el: Element): String {
             return el.text()
         }
         val doc = Jsoup.connect(link).get()
         var art = doc.select("p.css-0")
         val l1 = art.map { it -> transArticleintro(it) }
-        return l1
+        return l1   //!!splitLongText missed
     }
 
 }

@@ -6,38 +6,31 @@ import com.begemot.knewscommon.NewsPaperVersion
 import com.begemot.newspapers.*
 
 
-interface INewsPaper{
-    val olang     : String
-    val name      : String
-    val desc      : String
-    val logoName  : String
-    val handler   : String
-    // suspend fun getTranslatedArticle(originalTransLink: OriginalTransLink, statusApp: StatusApp):MutableList<OriginalTrans>
-    fun getOriginalHeadLines():List<KArticle>
-    fun getOriginalArticle(link:String,strbuild:StringBuilder):List<String> //the article split in 3000 chars pieces
-    //fun getlines(lhd: MutableState<MutableList<OriginalTransLink>>, statusApp: StatusApp):Unit=get_HeadLines(lhd,statusApp, ::getHeadLines)
-    // fun getName(e:Title):String
-    // fun linkToArticleScreen():(otl:OriginalTransLink)->Screens=::FullArticle
-    // fun linkToHeadLinesScreen():Screens=Screens.ListHeadLines
-    // fun getArticle(originalTransLink:OriginalTransLink, trans: MutableState<MutableList<OriginalTrans>>, statusApp: StatusApp)= get_Article(originalTransLink,trans,statusApp,::getTranslatedArticle)
-}
 
-
+import com.begemot.knewscommon.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.runBlocking
+import org.jsoup.Jsoup
+import kotlin.system.measureTimeMillis
 
 
 object  MBAPE{
-    val version = 2
-    val P=hashMapOf<String, INewsPaper>("GU" to GU,"RT" to RT,"SZ" to SZ,"LV" to LV, "HLP" to HLP)
+    val version = 5
+    val P=hashMapOf<String, INewsPaper>("GU" to GU,"RT" to RT,"SZ" to SZ,"LV" to LV
+        ,"LM" to LM,"PCh" to PCh, "HLP" to HLP)
 
 }
 
 fun getNewsPapers():List<NewsPaper>{
     val lNP= mutableListOf<NewsPaper>()
     val l=ArrayList(MBAPE.P.values)
+    l.remove(MBAPE.P["HLP"])
     l.forEach{
-        lNP.add(NewsPaper(handler = it.handler,name=it.name,desc = it.desc,title = "",olang = it.olang,logoname = it.logoName))
+        lNP.add(it.toNewsPaper())
     }
-   return lNP
+    lNP.sortWith(compareBy({it.olang},{it.name}))
+    lNP.add(HLP.toNewsPaper())
+    return lNP
 }
 
 fun getNewsPapersIfChangedVersion(ver:Int):NewsPaperVersion{
@@ -48,8 +41,25 @@ fun getNewsPapersIfChangedVersion(ver:Int):NewsPaperVersion{
 }
 
 
-/*fun getTranslatedHeadLines(name:String,tlang:String){
+/*fun addPinyinOTL(thl:List<OriginalTransLink>,original:Boolean):List<OriginalTransLink>{
+//    thl.forEachIndexed { index, it ->  if(index<5) getPinying(it) }
+    //val scope= CoroutineScope(Job()+Dispatchers.Default)
+    lateinit var L:List<OriginalTransLink>
 
+    val time = measureTimeMillis {
+        runBlocking(Dispatchers.IO) {
+            //val l = scope.launch {
+            if(original)
+            L = thl.pmap { it -> it.copy(romanized=ListPinyin(getPinying(it.kArticle.title))) }
+            else
+            L = thl.pmap { it -> it.copy(romanized=ListPinyin(getPinying(it.translated))) }
+            //}
+        }
+    }
+    println("addPinyinOTL pinyin time $time   total elements : ${thl.size}")
+    return L
+
+    //return thl.map { it->getPinying(it) }
 }*/
 
 

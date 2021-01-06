@@ -1,12 +1,12 @@
 package com.begemot.newspapers
 
 import com.begemot.knewscommon.KArticle
-import com.begemot.translib.INewsPaper
+
 import com.begemot.translib.splitLongText
 import kotlinx.serialization.Serializable
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Element
-
+import com.begemot.knewscommon.INewsPaper
 
 object RT : INewsPaper {
     override val olang: String
@@ -56,8 +56,8 @@ object RT : INewsPaper {
 
   }
 
-    override fun getOriginalArticle(link: String, strbuild: StringBuilder): List<String> {
-
+    override fun getOriginalArticle(link: String): List<String> {
+        val strbuild=StringBuilder()
         fun transArticleintro(el: Element): String {
             return el.text()
         }

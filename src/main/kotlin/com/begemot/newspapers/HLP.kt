@@ -1,7 +1,7 @@
 package com.begemot.newspapers
 
 import com.begemot.knewscommon.KArticle
-import com.begemot.translib.INewsPaper
+import com.begemot.knewscommon.INewsPaper
 import com.begemot.translib.splitLongText
 import kotlinx.serialization.Serializable
 import org.jsoup.Jsoup
@@ -23,11 +23,11 @@ object HLP : INewsPaper {
     override fun getOriginalHeadLines(): List<KArticle> {
        val lHelp= mutableListOf<KArticle>()
        lHelp.add(KArticle("This Application is a simple tool aiming to help language students"))
-       lHelp.add(KArticle("It displays the Headlines of the selected newspaper in the original and the current selected language"))
+       lHelp.add(KArticle("It displays the Headlines of the newspaper in the original language and the current selected one"))
        return lHelp
     }
 
-    override fun getOriginalArticle(link: String, strbuild: StringBuilder): List<String> {
+    override fun getOriginalArticle(link: String): List<String> {
         return emptyList()
     }
 

@@ -1,6 +1,7 @@
 plugins {
+    id("com.github.ben-manes.versions") version "0.36.0"
     `java-library`
-    kotlin("jvm") version "1.4.0"
+    kotlin("jvm") version "1.4.21"
 }
 
 group = "com.begemot"
@@ -23,10 +24,12 @@ repositories {
 dependencies {
     implementation(platform("com.begemot.knewsplatform-bom:deps:0.0.1"))
     implementation("com.begemot:knewscommon")
-    implementation(kotlin("stdlib-jdk8"))
+    implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
+    //implementation(kotlin("stdlib-jdk8"))
     implementation("org.jsoup:jsoup")
     implementation("io.ktor:ktor-client-serialization-jvm")
     implementation("com.google.cloud:google-cloud-storage")
+    implementation("io.github.microutils:kotlin-logging-jvm")
 }
 
 tasks {

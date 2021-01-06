@@ -2,29 +2,36 @@ package com.begemot.translib
 
 import com.begemot.knewscommon.*
 import com.begemot.translib.MBAPE.P
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.json.*
 import org.jsoup.Jsoup
 import java.net.URLEncoder
-
+import kotlin.system.measureTimeMillis
+import mu.KotlinLogging
 //import org.json.JSONArray
+private val logger = KotlinLogging.logger {}
+
 
 fun getOriginalArticle(namepaper:String, link:String):List<String>{
-    val sb=StringBuilder()
+    //val sb=StringBuilder()
     val iNewsPaper= MBAPE.P[namepaper] ?: throw Exception("Wrong news paper name!! : $namepaper")
-    return iNewsPaper.getOriginalArticle(link,sb)
+    return iNewsPaper.getOriginalArticle(link)
 }
 
 
 fun  getTranslatedArticle(name:String,tlang:String,link:String):List<OriginalTrans>{
+     logger.debug { "getTranslatedArticle $link"}
      val iNewsPaper= P[name] ?: return emptyList()
-     val str=StringBuilder()
-     val LA=iNewsPaper.getOriginalArticle(link,str)
+     //val str=StringBuilder()
+     val LA=iNewsPaper.getOriginalArticle(link)
+     logger.debug { LA.print("OriginalArticle ListOf Paragraphs ") }
    // return emptyList()
-     return translateListOfParagraphs(LA,name,tlang) //!!
+     return   translateListOfParagraphs(LA,iNewsPaper.olang,tlang) //!!
 }
 
 fun translateListOfParagraphs(lp:List<String>,olang: String,tlang: String):List<OriginalTrans>{
-    println("translateListOfParagraphs ${lp.size}  $olang $tlang")
+    logger.debug { "translateListOfParagraphs ${lp.size}  $olang $tlang" }
     val lOriginalTrans= mutableListOf<OriginalTrans>()
     lp.forEach {
         lOriginalTrans.addAll(gettranslatedText(it,olang,tlang))
@@ -47,7 +54,9 @@ fun splitLongText(text:StringBuilder):List<String>{
     if(text.length<maxlen) { LS.add(text.toString()); return LS}
 
 
-    LS= text.split(". ") as MutableList<String>
+    LS= text.split(".") as MutableList<String>
+    logger.debug("Number of senetences=${LS.size}")
+    logger.debug(LS.print("Phrases",LS.size))
     val bs=StringBuilder()
     while(LS.size>0){
         val txt=LS.removeAt(0)
@@ -68,46 +77,36 @@ fun splitLongText(text:StringBuilder):List<String>{
     return resultList
 }
 
+fun splitLongTextChinese(text:StringBuilder):List<String>{
+    val maxlen=1800
+    val resultList= mutableListOf<String>()
+    var LS = mutableListOf<String>()
+    if(text.length<maxlen) { LS.add(text.toString()); return LS}
 
 
-fun gettranslatedText(text: String, olang: String,tlang:String):List<OriginalTrans>  {
-    val lOriginalTrans= mutableListOf<OriginalTrans>()
-    if(olang.equals(tlang)){
-        val ls=text.split(". ")
-        ls.forEach {
-            val s= "$it. "
-            lOriginalTrans.add(OriginalTrans(s,s))
+    LS= text.split(" ").filter{ it.isNotEmpty() } as MutableList<String>
+    logger.debug("Number of senetences=${LS.size}")
+    logger.debug(LS.print("Phrases"))
+    val bs=StringBuilder()
+    while(LS.size>0){
+        val txt=LS.removeAt(0)
+        if((txt.length+bs.length)<maxlen){
+            bs.append(txt)
+            bs.append(" ")
+        }else{
+            //bs.append(". ")
+            resultList.add(bs.toString())
+            bs.clear()
+            bs.append(txt)
+            bs.append(" ")
+            if(text[txt.length].equals("."))
+                bs.append("x. ")
         }
-        return lOriginalTrans
     }
-
-
-    if(text.length==0) return lOriginalTrans //????
-    val url =
-        "https://translate.googleapis.com/translate_a/single?client=gtx&sl=" + "$olang" + "&tl=" + "$tlang" + "&dt=t&q=" + URLEncoder.encode(
-            text,
-            "utf-8"
-        )
-    val d = Jsoup.connect(url).ignoreContentType(true).get().text()
-    //val lTrans=Json(JsonConfiguration.Stable).parseJson(d)
-    val lTrans= kjson.parseToJsonElement(d)
-      //println("tlang->$tlang")
-
-    if(lTrans is JsonNull) return lOriginalTrans    // si rebem un text buit la traduccio tambe ho sera millor a lentrada
-    val qsm=lTrans.jsonArray[0] as JsonArray
-    for(i in 0 until qsm.size){
-        val l= qsm[i].jsonArray
-        val z1=l[1].toString()
-        val z2=z1.subSequence(1,z1.length-1).toString()
-        //println("uno->${l[1]}")
-        //println("cero->${l[0].toString().replace("\\","")}")
-        val s2=l[0].toString().replace("\\","")
-        val s3=s2.subSequence(1,s2.length-1).toString()
-        lOriginalTrans.add(OriginalTrans(z2,s3))
-    }
-    return lOriginalTrans
-
+    if(bs.length>0) resultList.add(bs.toString())
+    return resultList
 }
+
 
 
 /*
