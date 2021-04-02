@@ -17,6 +17,8 @@ object LM:INewsPaper {
         get() = "Lemonde.png"
     override val handler: String
         get() = "LM"
+    override val url: String
+        get() = "https://www.lemonde.fr/"
 
 
     override fun getOriginalHeadLines(): List<KArticle> {
@@ -31,12 +33,12 @@ object LM:INewsPaper {
         val con = Jsoup.connect(s)
         val doc = con.get()
 
-        var art = doc.select("span.article__title-label")
+        //var art = doc.select("span.article__title-label")
 
         //art=doc.select("p.article__title")
         //println("art  $art")
 
-        art = doc.select("a.article--list")
+        val art = doc.select("a.article--list")
         //println("artK ${l1.size} $l1")
 
 

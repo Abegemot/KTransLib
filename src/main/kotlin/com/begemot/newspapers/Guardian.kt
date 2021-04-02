@@ -22,6 +22,8 @@ object GU : INewsPaper {
         get() = "The_Guardian.png"
     override val handler: String
         get() = "GU"
+    override val url: String
+        get() = "https://www.theguardian.com/international"
 
     override fun getOriginalHeadLines(): List<KArticle> {
         println("GU getOriginal headlines")

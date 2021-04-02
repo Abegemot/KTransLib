@@ -17,6 +17,8 @@ object SZ :INewsPaper{
         //get() = "La_Vanguardia.png"
     override val handler: String
         get() = "SZ"
+    override val url: String
+        get() = "https://www.sueddeutsche.de"
 
     override fun getOriginalHeadLines(): List<KArticle> {
         fun transFigure(el: Element): KArticle {

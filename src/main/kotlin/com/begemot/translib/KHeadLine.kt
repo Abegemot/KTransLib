@@ -2,12 +2,15 @@ package com.begemot.translib
 
 import com.begemot.knewscommon.*
 import kotlinx.coroutines.*
+import mu.KotlinLogging
 
 
 //import kotlinx.serialization.json.JsonConfiguration
 import org.jsoup.Connection
 import org.jsoup.Jsoup
 import kotlin.system.measureTimeMillis
+private val logger = KotlinLogging.logger {}
+
 
 fun getOriginalHeadLines(namepaper:String):List<KArticle>{
     val iNewsPaper= MBAPE.P[namepaper] ?: throw Exception(" Wrong news paper name!! : $namepaper")
@@ -16,11 +19,11 @@ fun getOriginalHeadLines(namepaper:String):List<KArticle>{
 
 
 fun getTranslatedHeadLines(namepaper:String, tlang:String):List<OriginalTransLink>{
-    println("getTranslatedHeadlines 1")
+    logger.debug { "getTranslatedHeadlines 1" }
     val iNewsPaper= MBAPE.P[namepaper] ?: throw Exception(" Wrong news paper name!! : $namepaper")
-    println("getTranslatedHeadlines 2")
+
     val lHl=iNewsPaper.getOriginalHeadLines()
-    println("getTranslatedHeadlines 3 size lhl ${lHl.size}")
+    logger.debug { "getTranslatedHeadlines 3 size lhl ${lHl.size}" }
 
     //lHl.print("before translate")
     return translateHeadLines(lHl,iNewsPaper.olang,tlang)
@@ -36,7 +39,7 @@ fun getTranslatedHeadLines(namepaper:String, tlang:String):List<OriginalTransLin
 }
 
 fun translateHeadLines(lA:List<KArticle>, olang: String, tlang: String):List<OriginalTransLink>{
-    println("translate HeadLines nArticles=${lA.size} ")
+    logger.debug{"translate HeadLines nArticles=${lA.size} "}
     if(lA.isEmpty()) throw Exception("Empty HeadLines!!")
     if(olang.equals(tlang)){
         val lOTL= mutableListOf<OriginalTransLink>()
@@ -44,18 +47,18 @@ fun translateHeadLines(lA:List<KArticle>, olang: String, tlang: String):List<Ori
             lOTL.add(OriginalTransLink(it,""))
             //lOTL.add(OriginalTransLink(it,it.title))
         }
+        if(olang.equals("zh")) return addPinyinOTL(lOTL,true)
         return lOTL
     }
     val js= lKArticlesToJsonForTranslate(lA,olang,tlang)
     val Z= translateJson(js.value)
-    println("---->XXXXXX translatedJson")
-    println(Z)
-    println("XXXXXX<-----translatedJason")
+    logger.debug{"translated JSON  $Z\nend"}
 
     val lt= JsonToListStrings(Z)
     val lOTL=lA.zip(lt) { a, c->OriginalTransLink(a,c.translatedText)}
-    println("Size lOTL = ${lOTL.size}")
-    lOTL.print("After Translate")
+
+    logger.debug{ "Size lOTL = ${lOTL.size}"}
+    logger.debug{ "after translate :${lOTL.print("After Translate")}" }
     if(tlang.equals("zh") || tlang.equals("zh-TW"))  return addPinyinOTL(lOTL,false)
     if(olang.equals("zh"))  return addPinyinOTL(lOTL,true)
     else return lOTL
@@ -71,7 +74,7 @@ fun translateHeadLines(lA:List<KArticle>, olang: String, tlang: String):List<Ori
 
 
 private fun lKArticlesToJsonForTranslate(lA:List<KArticle>, olang:String, tlang:String): JasonString {
-    println("lKArticlesToJsonForTranslate  ${lA.size}")
+    logger.debug { "lKArticlesToJsonForTranslate  ${lA.size}"}
     if(lA.size==0) return JasonString("NOP")
     val x= jsonTrans(lA.map{it.title},olang,tlang,"text")
    // println("->x<-$x")
@@ -85,7 +88,7 @@ private fun translateJson(sjason:String): String {
     val sUrl="https://www.googleapis.com/language/translate/v2?key=$apikey"
     //Timber.d("URL: $sUrl")
     //println("->json: $sjason")
-    println("translate json")
+    logger.debug { "translate json" }
     val cr= Jsoup.connect(sUrl)
         .header("Content-Type","application/json; charset=utf-8")
         .header("Accept","application/json")

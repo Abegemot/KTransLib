@@ -19,6 +19,8 @@ object RT : INewsPaper {
         get() = "rt-logo.png"
     override val handler: String
         get() = "RT"
+    override val url: String
+        get() = "https://russian.rt.com/inotv"
 
     override fun getOriginalHeadLines(): List<KArticle> {
         fun transFigure(el: Element): KArticle {

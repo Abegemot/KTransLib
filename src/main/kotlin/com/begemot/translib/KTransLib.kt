@@ -10,14 +10,15 @@ import com.begemot.newspapers.*
 import com.begemot.knewscommon.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
+import mu.KotlinLogging
 import org.jsoup.Jsoup
 import kotlin.system.measureTimeMillis
-
+private val logger = KotlinLogging.logger {}
 
 object  MBAPE{
-    val version = 5
+    val version = 7
     val P=hashMapOf<String, INewsPaper>("GU" to GU,"RT" to RT,"SZ" to SZ,"LV" to LV
-        ,"LM" to LM,"PCh" to PCh, "HLP" to HLP)
+        ,"LM" to LM,"PCh" to PCh, "KP" to KP, "HLP" to HLP,"BLK" to BLK)
 
 }
 
@@ -65,5 +66,5 @@ fun getNewsPapersIfChangedVersion(ver:Int):NewsPaperVersion{
 
 
 fun HolaTransLib(){
-    println("Hola trans lib")
+    logger.debug{"Hola trans lib"}
 }

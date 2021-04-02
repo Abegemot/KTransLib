@@ -18,12 +18,14 @@ object LV : INewsPaper {
         get() = "La_Vanguardia.png"
     override val handler: String
         get() = "LV"
+    override val url: String
+        get() = "https://www.lavanguardia.com"
 
     override fun getOriginalHeadLines(): List<KArticle> {
         fun transFigure(el: Element): KArticle {
            // println(el.text())
             val title = el.text()
-            val link = "https://www.lavanguardia.com"+el.select("a[href]").first()?.attr("href") ?: ""
+            val link = "https://www.lavanguardia.com"+el.select("a[href]").first()?.attr("href")
            // println(link)
             return KArticle(title, link)
         }
@@ -41,7 +43,8 @@ object LV : INewsPaper {
     }
 
     override fun getOriginalArticle(link: String): List<String> {
-        val strbuild=StringBuilder()
+        val strbuild = StringBuilder()
+
         fun transArticleintro(el: Element): String {
             return el.text()
         }

@@ -19,6 +19,8 @@ object HLP : INewsPaper {
         get() = "help.png"
     override val handler: String
         get() = "HLP"
+    override val url: String
+        get() = "none"
 
     override fun getOriginalHeadLines(): List<KArticle> {
        val lHelp= mutableListOf<KArticle>()

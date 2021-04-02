@@ -56,7 +56,7 @@ fun splitLongText(text:StringBuilder):List<String>{
 
     LS= text.split(".") as MutableList<String>
     logger.debug("Number of senetences=${LS.size}")
-    logger.debug(LS.print("Phrases",LS.size))
+    logger.debug(LS.print("Phrases"))
     val bs=StringBuilder()
     while(LS.size>0){
         val txt=LS.removeAt(0)

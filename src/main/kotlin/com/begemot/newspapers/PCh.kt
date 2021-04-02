@@ -19,6 +19,8 @@ object PCh : INewsPaper {
         get() = "ydlogo.png"
     override val handler: String
         get() = "PCh"
+    override val url: String
+        get() = "http://www.people.com.cn/"
 
     override fun getOriginalHeadLines(): List<KArticle> {
         fun transFigure(el:Element):KArticle{
@@ -39,7 +41,7 @@ object PCh : INewsPaper {
         val doc=Jsoup.connect(link).get()
         val l= mutableListOf("")
         l.add(doc.select("h1").text())
-        val l2=doc.select("p").forEach { it->l.add(it.text()) }
+        //val l2=doc.select("p").forEach { it->l.add(it.text()) }
         l.print("getOriginal Article PCh.kt")
         l.forEach{strbuild.append(it);strbuild.append(' ')}
         return splitLongTextChinese(strbuild)
