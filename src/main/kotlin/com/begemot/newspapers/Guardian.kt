@@ -4,13 +4,13 @@ import com.begemot.knewscommon.KArticle
 
 import com.begemot.knewscommon.INewsPaper
 import com.begemot.translib.addStringWithEndPoint
-import com.begemot.translib.splitLongText
+import kotlinx.serialization.Serializable
 import org.jsoup.Connection
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 
 
-
+@Serializable
 object GU : INewsPaper {
     override val olang: String
         get() = "en"
@@ -32,7 +32,7 @@ object GU : INewsPaper {
         return u.map { it -> KArticle(it.text(), it.attr("href")) }//.subList(7,40)
     }
 
-    override fun getOriginalArticle(link: String): List<String> {
+    override fun getOriginalArticle(link: String): String {
         val strbuild=StringBuilder()
         val con = Jsoup.connect(link)
         val resp: Connection.Response = con.execute()
@@ -44,7 +44,7 @@ object GU : INewsPaper {
             println("Guardian error geting original article resp status code = ${resp.statusCode()}")
             println(resp.statusMessage())
             println("end Guardian")
-            return emptyList()
+            return ""
         }
 
 
@@ -86,7 +86,7 @@ object GU : INewsPaper {
             addStringWithEndPoint(it.text(), strbuild)
         }
         println("textsb $strbuild")
-        return splitLongText(strbuild)
+        return strbuild.toString()
 
     }
 

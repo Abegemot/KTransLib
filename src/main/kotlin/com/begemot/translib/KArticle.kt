@@ -2,42 +2,50 @@ package com.begemot.translib
 
 import com.begemot.knewscommon.*
 import com.begemot.translib.MBAPE.P
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.runBlocking
-import kotlinx.serialization.json.*
-import org.jsoup.Jsoup
-import java.net.URLEncoder
-import kotlin.system.measureTimeMillis
 import mu.KotlinLogging
 //import org.json.JSONArray
 private val logger = KotlinLogging.logger {}
 
 
-fun getOriginalArticle(namepaper:String, link:String):List<String>{
+fun getOriginalArticle(namepaper:String, link:String):String{
     //val sb=StringBuilder()
     val iNewsPaper= MBAPE.P[namepaper] ?: throw Exception("Wrong news paper name!! : $namepaper")
     return iNewsPaper.getOriginalArticle(link)
 }
 
 
-fun  getTranslatedArticle(name:String,tlang:String,link:String):List<OriginalTrans>{
+suspend fun  getTranslatedArticle(namepaper:String,tlang:String,link:String):List<OriginalTrans>{
      logger.debug { "getTranslatedArticle $link"}
-     val iNewsPaper= P[name] ?: return emptyList()
-     //val str=StringBuilder()
-     val LA=iNewsPaper.getOriginalArticle(link)
-     logger.debug { LA.print("OriginalArticle ListOf Paragraphs ") }
-   // return emptyList()
-     return   translateListOfParagraphs(LA,iNewsPaper.olang,tlang) //!!
+     val iNewsPaper= P[namepaper] ?: throw Exception("Wrong news paper name!! : $namepaper")
+     val sOriginalArticle=iNewsPaper.getOriginalArticle(link)
+     return  transListOfParagraphs(sOriginalArticle,iNewsPaper.olang,tlang) //!!
 }
 
-fun translateListOfParagraphs(lp:List<String>,olang: String,tlang: String):List<OriginalTrans>{
-    logger.debug { "translateListOfParagraphs ${lp.size}  $olang $tlang" }
-    val lOriginalTrans= mutableListOf<OriginalTrans>()
-    lp.forEach {
-        lOriginalTrans.addAll(gettranslatedText(it,olang,tlang))
+suspend fun transListOfParagraphs(text:String,olang: String,tlang: String):List<OriginalTrans>{
+    return try{
+       //transPayParagraphs(text,olang,tlang)
+       translateFreeListOfParagraphs(text,olang,tlang)
     }
-    return lOriginalTrans
+    catch (e:Exception){
+        transPayParagraphs(text,olang,tlang)
+    }
 }
+
+
+suspend fun transPayParagraphs(text:String,olang: String,tlang: String):List<OriginalTrans>{
+    logger.error{"-----PAY PAY PAY PAIN ------"}
+    val lSentences = buildListSentences(text,olang)
+    logger.debug { lSentences.print("List Sentences") }
+    return transPayListOfParagraphs(lSentences,olang,tlang)
+}
+
+
+
+fun buildListSentences(text:String,olang: String):List<String>{
+    if(olang.equals("zh")) return text.split(Regex("(?<=\\。)")).filterNot { it.isEmpty() }
+    else  return text.split(Regex("(?<=\\. )")).filterNot { it.isEmpty() }
+}
+
 
 fun addStringWithEndPoint(str:String, textsb:StringBuilder){
     val debug=false
@@ -47,6 +55,9 @@ fun addStringWithEndPoint(str:String, textsb:StringBuilder){
     else { if(debug) println("no acaba en punt"); textsb.append(". ") }
 }
 
+
+
+
 fun splitLongText(text:StringBuilder):List<String>{
     val maxlen=3000
     val resultList= mutableListOf<String>()
@@ -55,8 +66,7 @@ fun splitLongText(text:StringBuilder):List<String>{
 
 
     LS= text.split(".") as MutableList<String>
-    logger.debug("Number of senetences=${LS.size}")
-    logger.debug(LS.print("Phrases"))
+    logger.debug(LS.print("Sentences"))
     val bs=StringBuilder()
     while(LS.size>0){
         val txt=LS.removeAt(0)

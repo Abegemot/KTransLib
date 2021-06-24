@@ -42,7 +42,7 @@ object LV : INewsPaper {
 
     }
 
-    override fun getOriginalArticle(link: String): List<String> {
+    override fun getOriginalArticle(link: String): String {
         val strbuild = StringBuilder()
 
         fun transArticleintro(el: Element): String {
@@ -62,7 +62,7 @@ object LV : INewsPaper {
             strbuild.append(transArticleintro(it))
         }
 
-        return splitLongText(strbuild)
+        return strbuild.toString()
     }
 
 }

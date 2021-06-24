@@ -18,60 +18,34 @@ class KCache(){
    val bucketName="knews1939.appspot.com"
    val st by lazy {  StorageOptions.getDefaultInstance().service }
    val bucket by lazy { st.get(bucketName) }
-   companion object KFiles {
-      //val kfiles =hashMapOf<String,BlobId>()
-      //fun setup(){
-         //kfiles.clear()
-         //val x=1/0
-         //val st=StorageOptions.getDefaultInstance().service
-         //val bucket=st.get("knews1939.appspot.com")
 
-         //val bl=bucket.list()
-         //for(b in bl.values){
-            //kfiles[b.name]=b.blobId
-           // println("${b.name}")
-         //}
-      //}
-   }
 
    fun dateParent(sNameFile:String,lacronim: String):Long {
-        //val c1 = kfiles[sNameFile.substring(0,sNameFile.length-lacronim.length)]
         val c=bucket.get(sNameFile.substring(0,sNameFile.length-lacronim.length)).blobId
         return st.get(c).updateTime
    }
    fun findInCache2(sNameFile:String,lacronim:String): Found {
-       loggerk.debug { "Hi I'm findInCache2" }
+      loggerk.debug { "Hi I'm findInCache2" }
       val c=bucket.get(sNameFile)
-      println("$sNameFile  ")
-
+      loggerk.debug{ "$sNameFile  " }
       if(c!=null)  return Found(true,dateParent(sNameFile,lacronim),String(st.get(c.blobId).getContent()))
       return Found(false,0,"$sNameFile not found")
-
    }
-   fun findInCache(sNameFile:String): Found {
-      //val c2 = BlobId.of(bucketName, sNameFile)  //¿?????
-      //val s=bucket   //to ensure the setUp!!!!
-      val c=bucket.get(sNameFile)
-      //val c= kfiles[sNameFile]
 
-      //if(c!=null) return Found(true,dateParent(sNameFile),String(st.get(c).getContent()))
+   fun findInCache(sNameFile:String): Found {
+      val c=bucket.get(sNameFile)
       if(c!=null) return Found(true,st.get(c.blobId).updateTime,String(st.get(c.blobId).getContent()))
       return Found(false,0,"$sNameFile not found")
    }
    fun findInCacheImg(sNameFile:String): Found2 {
-      //val c = BlobId.of(bucketName, sNameFile)  //¿?????
-      //val s=bucket //to ensure the set up
-      //val c= kfiles[sNameFile]
       val c=bucket.get(sNameFile)
       if(c!=null) return Found2(true,st.get(c.blobId).getContent())
       return Found2(false,ByteArray(0))
    }
    fun storeInCache(sNameFile:String,sContent:String):Long{
        val i=  bucket.create(sNameFile,sContent.toByteArray())
-
-      //i.update()
-       if(i==null) println(" NULL in create bucked  $sNameFile")
-       else println("create bucked NOT null $sNameFile")
+       if(i==null) loggerk.error{" NULL in create bucked  $sNameFile"}
+       else loggerk.debug { "bucked created OK $sNameFile" }
        return i.updateTime
    }
 
@@ -90,10 +64,25 @@ class KCache(){
    fun deleteFiles(){
       println("cache Delete files called")
       val bl=bucket.list()
-      val ldirectories= listOf("images,Books")
+      val ldirectories= listOf("Images/","Books/","Articles/","HeadLines/")
       for(b in bl.values){
-         if(b.name?.contains("images") != true || b.name?.contains("Books") != true)
-         st.delete(b.blobId)
+
+
+         if(b.name?.contains("Images") != true && b.name?.contains("Books") != true) {
+            if(b.name !in ldirectories) {
+               loggerk.debug { "removing ${b.name}" }
+               println("removing ${b.name}")
+               st.delete(b.blobId)
+            }
+         }
+         if(b.name?.contains("Books/Bulgakov")==true){
+            if(b.name?.takeLast(1)?.get(0)?.isDigit()==false){
+               println("removing ${b.name}")
+               st.delete(b.blobId)
+            }
+         }
+
+
       }
       //setup()
 

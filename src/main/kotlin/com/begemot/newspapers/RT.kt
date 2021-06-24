@@ -58,7 +58,7 @@ object RT : INewsPaper {
 
   }
 
-    override fun getOriginalArticle(link: String): List<String> {
+    override fun getOriginalArticle(link: String): String {
         val strbuild=StringBuilder()
         fun transArticleintro(el: Element): String {
             return el.text()
@@ -82,7 +82,8 @@ object RT : INewsPaper {
         //println("l2 ${l2.size} $l2")
         //val lt= (l1 + l2).joinToString(separator = " ")
         //return l1+l2
-        return splitLongText(strbuild)
+        //return splitLongText(strbuild)
+        return strbuild.toString()
     }
 
 }

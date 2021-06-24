@@ -45,14 +45,15 @@ object LM:INewsPaper {
         return art.map { it -> transFigure(it) }
     }
 
-    override fun getOriginalArticle(link: String): List<String> {
+    override fun getOriginalArticle(link: String): String {
         val strbuild=StringBuilder()
         val doc = Jsoup.connect(link).get()
-        val art = doc.select("p.article__paragraph.article__paragraph--lf")
+        val art = doc.select("p.article__paragraph")
         art.forEach{
             strbuild.append(it.text())
+            strbuild.append(" ")
         }
-        return splitLongText(strbuild)
+        return strbuild.toString()
 
     }
 

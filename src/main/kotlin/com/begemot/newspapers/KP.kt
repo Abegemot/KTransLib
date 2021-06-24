@@ -2,8 +2,6 @@ package com.begemot.newspapers
 
 import com.begemot.knewscommon.INewsPaper
 import com.begemot.knewscommon.KArticle
-import com.begemot.knewscommon.print
-import com.begemot.translib.splitLongText
 import mu.KotlinLogging
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Element
@@ -57,17 +55,21 @@ object KP :INewsPaper {
         return l1
     }
 
-    override fun getOriginalArticle(link: String): List<String> {
+    override fun getOriginalArticle(link: String): String {
         val strbuild=StringBuilder()
-        logger.debug { link }
-        var s="p.styled__Paragraph-sc-17amg0v-0.ivlOHa"
+//        logger.debug { "link $link" }
+        var s="p.styled__Paragraph-sc-1wayp1z-16.fNsfGH"
+
+        //var s="p.styled__Paragraph-sc-17amg0v-0.ivlOHa"
         val doc=Jsoup.connect(link).get()
         val art=doc.select(s)
         art.forEach {
+           //logger.debug { "JK->${it.text()}" }
            strbuild.append(it.text())
+           strbuild.append(" ")
         }
-        logger.debug { art.size }
-        return splitLongText(strbuild)
+  //      logger.debug { art.size }
+        return strbuild.toString()
     }
 
 }

@@ -1,11 +1,19 @@
 package com.begemot.newspapers
 
-import com.begemot.knewscommon.KArticle
-import com.begemot.knewscommon.INewsPaper
+import com.begemot.knewscommon.*
+import kotlinx.serialization.Serializable
+import mu.KotlinLogging
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Element
+import java.lang.StringBuilder
 
-object SZ :INewsPaper{
+
+private val loggerk = KotlinLogging.logger {}
+
+@Serializable
+object SZ : INewsPaper {
+    override val kind: KindOfNews
+        get() = KindOfNews.NEWS
     override val olang: String
         get() = "de"
     override val name: String
@@ -35,15 +43,26 @@ object SZ :INewsPaper{
         return l1
     }
 
-    override fun getOriginalArticle(link: String): List<String> {
-
+    override fun getOriginalArticle(link: String): String {
         fun transArticleintro(el: Element): String {
+            loggerk.debug { "hola" }
             return el.text()
         }
+        loggerk.debug { "JOZU!!  SZ getOriginalArticle" }
         val doc = Jsoup.connect(link).get()
-        var art = doc.select("p.css-0")
-        val l1 = art.map { it -> transArticleintro(it) }
-        return l1   //!!splitLongText missed
+        var art = doc.select("p[class=\" css-13wylk3\"]")
+        val strb=StringBuilder()
+        art.forEach {
+           // loggerk.debug { it.text() }
+            strb.append(it.text())
+            strb.append(" ")
+        }
+
+        //return splitLongText(strb)
+        return strb.toString()
+
+        //val l1 = art.map { it -> transArticleintro(it) }
+        //return l1   //!!splitLongText missed
     }
 
 }

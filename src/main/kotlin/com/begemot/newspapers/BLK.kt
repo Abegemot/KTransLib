@@ -1,16 +1,18 @@
 package com.begemot.newspapers
 
+import com.begemot.knewscommon.IBook
 import com.begemot.knewscommon.INewsPaper
 import com.begemot.knewscommon.KArticle
-import com.begemot.knewscommon.toJSON2
-import com.begemot.translib.splitLongText
-import java.lang.StringBuilder
+import kotlinx.serialization.Serializable
 import java.nio.charset.Charset
 import java.nio.file.Files
 import java.nio.file.Paths
+import kotlin.text.StringBuilder
 
-object BLK:INewsPaper {
-
+@Serializable
+object BLK: IBook {
+    override val directory: String
+        get() = "Bulgakov"
     override val olang: String
         get() = "ru"
     override val name: String
@@ -18,11 +20,11 @@ object BLK:INewsPaper {
     override val desc: String
         get() = "Russian Book"
     override val logoName: String
-        get() = ""
+        get() = "master2.png"
     override val handler: String
         get() = "BLK"
     override val url: String
-        get() = ""
+        get() = "https://en.wikipedia.org/wiki/The_Master_and_Margarita"
 
     override fun getOriginalHeadLines(): List<KArticle> {
         val lChapters=mutableListOf<KArticle>()
@@ -62,10 +64,10 @@ object BLK:INewsPaper {
         return lChapters
     }
 
-    override fun getOriginalArticle(link: String): List<String> {
+    override fun getOriginalArticle(link: String): String {
         val p=Paths.get("src/main/resources/bul.txt")
 
-        val lSentences= mutableListOf<String>()
+        val lSentences= StringBuilder()//mutableListOf<String>()
 
         val lTxt=Files.readAllLines(p,Charset.forName("Windows-1251"))
         lTxt.forEachIndexed { i,it->
@@ -78,7 +80,7 @@ object BLK:INewsPaper {
                     if(sAux.length>120){ q.add(sAux); sAux="" }
                 }
                 if(sAux.isNotEmpty()) q.add(sAux)
-                lSentences.addAll(q)
+                lSentences.append(q.joinToString {""})
             }
         }
         println("fin")
@@ -87,7 +89,7 @@ object BLK:INewsPaper {
             println("$i (${it.length} -> $it ")
         }*/
         //val jsonSentences=lSentences.toJSON2()
-        return lSentences //splitLongText(strb)
+        return lSentences.toString() //splitLongText(strb)
 
     }
 }

@@ -16,9 +16,9 @@ import kotlin.system.measureTimeMillis
 private val logger = KotlinLogging.logger {}
 
 object  MBAPE{
-    val version = 7
-    val P=hashMapOf<String, INewsPaper>("GU" to GU,"RT" to RT,"SZ" to SZ,"LV" to LV
-        ,"LM" to LM,"PCh" to PCh, "KP" to KP, "HLP" to HLP,"BLK" to BLK)
+    val version = 9
+    val P=hashMapOf<String, IBaseNewsPaper>("GU" to GU,"RT" to RT,"SZ" to SZ,"LV" to LV
+        ,"LM" to LM,"PCh" to PCh, "KP" to KP, "HLP" to HLP,"BLK" to BLK,"LPE" to LPeste )
 
 }
 
