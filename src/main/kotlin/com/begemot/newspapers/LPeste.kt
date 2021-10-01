@@ -8,7 +8,7 @@ import com.begemot.knewscommon.KArticle
 
 object LPeste: IBook {
 
-    override val directory: String
+    override val googleDir: String
         get() = "Camus"
     override val olang: String
         get() = "fr"
@@ -17,7 +17,7 @@ object LPeste: IBook {
     override val desc: String
         get() = "French Book"
     override val logoName: String
-        get() = "lapeste.png"
+        get() = "lapeste.jpg"
     override val handler: String
         get() = "LPE"
     override val url: String

@@ -30,7 +30,7 @@ object RT : INewsPaper {
             // .replace('.',',')
             // .replace('—',' ')
             // .replace('?','?')+"]. "
-            val link = el.select("a[href]").first().attr("abs:href")
+            val link = el.select("a[href]").first()?.attr("abs:href") ?: ""
             return KArticle(title, link)
         }
         fun transSection(el: Element): KArticle {

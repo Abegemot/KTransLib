@@ -42,7 +42,7 @@ object LM:INewsPaper {
         //println("artK ${l1.size} $l1")
 
 
-        return art.map { it -> transFigure(it) }
+        return art.map { it -> transFigure(it) }.subList(0,120)
     }
 
     override fun getOriginalArticle(link: String): String {

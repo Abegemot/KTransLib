@@ -12,6 +12,11 @@ import kotlin.system.measureTimeMillis
 private val logger = KotlinLogging.logger {}
 
 
+fun getOlang(namepaper: String):String{
+    val iNewsPaper= MBAPE.P[namepaper] ?: throw Exception(" Wrong news paper name!! : $namepaper")
+    return iNewsPaper.olang
+}
+
 fun getOriginalHeadLines(namepaper:String):List<KArticle>{
     val iNewsPaper= MBAPE.P[namepaper] ?: throw Exception(" Wrong news paper name!! : $namepaper")
     return iNewsPaper.getOriginalHeadLines()

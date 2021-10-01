@@ -1,8 +1,8 @@
 plugins {
     id("com.github.ben-manes.versions") version "0.39.0"
     `java-library`
-    kotlin("jvm") version "1.5.10"
-    kotlin("plugin.serialization") version "1.5.10"
+    kotlin("jvm") version "1.5.30"
+   // kotlin("plugin.serialization") version "1.5.21"
 }
 
 group = "com.begemot"

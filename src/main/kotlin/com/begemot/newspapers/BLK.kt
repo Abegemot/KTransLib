@@ -9,9 +9,9 @@ import java.nio.file.Files
 import java.nio.file.Paths
 import kotlin.text.StringBuilder
 
-@Serializable
+//@Serializable
 object BLK: IBook {
-    override val directory: String
+    override val googleDir: String
         get() = "Bulgakov"
     override val olang: String
         get() = "ru"
@@ -20,7 +20,7 @@ object BLK: IBook {
     override val desc: String
         get() = "Russian Book"
     override val logoName: String
-        get() = "master2.png"
+        get() = "master.jpg"
     override val handler: String
         get() = "BLK"
     override val url: String

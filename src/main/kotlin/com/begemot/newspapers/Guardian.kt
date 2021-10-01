@@ -10,7 +10,7 @@ import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 
 
-@Serializable
+//@Serializable
 object GU : INewsPaper {
     override val olang: String
         get() = "en"

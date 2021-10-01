@@ -10,7 +10,7 @@ import java.lang.StringBuilder
 
 private val loggerk = KotlinLogging.logger {}
 
-@Serializable
+//@Serializable
 object SZ : INewsPaper {
     override val kind: KindOfNews
         get() = KindOfNews.NEWS
