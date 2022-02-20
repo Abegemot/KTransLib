@@ -1,14 +1,14 @@
 plugins {
-    id("com.github.ben-manes.versions") version "0.39.0"
+    id("com.github.ben-manes.versions") version "0.42.0"
     `java-library`
-    kotlin("jvm") version "1.5.30"
+    kotlin("jvm") version "1.6.10"
    // kotlin("plugin.serialization") version "1.5.21"
 }
 
 group = "com.begemot"
 version = "1.0"
 
-repositories {
+/*repositories {
     //mavenCentral()
     mavenLocal(){
         metadataSources {
@@ -20,11 +20,12 @@ repositories {
     //jcenter()
     mavenCentral()
     //maven { url = uri("https://kotlin.bintray.com/ktor") }
-}
+}*/
 
 
 dependencies {
-    implementation(platform("com.begemot.knewsplatform-bom:deps:0.0.1"))
+    //implementation(platform("com.begemot.knewsplatform-bom:deps:0.0.1"))
+    implementation(platform("com.begemota:sharedlibrary"))
     implementation("com.begemot:knewscommon")
     implementation("org.jetbrains.kotlin:kotlin-stdlib")
 

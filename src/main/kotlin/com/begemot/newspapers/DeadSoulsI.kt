@@ -19,19 +19,18 @@ object DeadSoulsI : IBook {
         get() = "https://en.wikipedia.org/wiki/Dead_Souls"
 
     override fun getOriginalHeadLines(): List<KArticle> {
-        val lChapters= listOf<KArticle>(
-            KArticle("1","1"),
-            KArticle("2","2"),
-            KArticle("3","3"),
-            KArticle("4","4"),
-            KArticle("5","5"),
-            KArticle("6","6"),
-            KArticle("7","7"),
-            KArticle("8","8"),
-            KArticle("9","9"),
-            KArticle("10","10"),
-            KArticle("11","11"),
+        return listOf(
+            KArticle("1", "1"),
+            KArticle("2", "2"),
+            KArticle("3", "3"),
+            KArticle("4", "4"),
+            KArticle("5", "5"),
+            KArticle("6", "6"),
+            KArticle("7", "7"),
+            KArticle("8", "8"),
+            KArticle("9", "9"),
+            KArticle("10", "10"),
+            KArticle("11", "11"),
         )
-        return lChapters
     }
 }
