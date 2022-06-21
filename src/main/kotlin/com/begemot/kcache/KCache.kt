@@ -3,6 +3,7 @@ package com.begemot.kcache
 import com.begemot.knewscommon.Found
 import com.begemot.knewscommon.Found2
 import com.begemot.knewscommon.StoredElement
+import com.begemot.translib.getNewsPaperByKey
 import com.google.cloud.storage.BlobId
 import com.google.cloud.storage.StorageOptions
 import com.google.cloud.storage.Blob
@@ -19,6 +20,11 @@ class KCache(){
    val st by lazy {  StorageOptions.getDefaultInstance().service }
    val bucket by lazy { st.get(bucketName) }
 
+
+   fun dateFile(sNameFile: String):Long {
+      val c=bucket.get(sNameFile).blobId
+      return st.get(c).updateTime
+   }
 
    fun dateParent(sNameFile:String,lacronim: String):Long {
         val c=bucket.get(sNameFile.substring(0,sNameFile.length-lacronim.length)).blobId
@@ -38,10 +44,34 @@ class KCache(){
       return Found(false,0,"$sNameFile not found")
    }
    fun findInCacheImg(sNameFile:String): Found2 {
+
       val c=bucket.get(sNameFile)
       if(c!=null) return Found2(true,st.get(c.blobId).getContent())
       return Found2(false,ByteArray(0))
    }
+
+
+   fun findFile(sNameFile: String):Found2{
+      val c=bucket.get(sNameFile)
+      if(c!=null) return Found2(true,st.get(c.blobId).getContent())
+      return Found2(false,ByteArray(0))
+   }
+
+   fun findMp3(sNameFile: String):Found2{
+      //val path="Mp3/nochcbetla.MP3"
+      val path="Mp3/$sNameFile.MP3"
+      loggerk.debug { "trying to find $path" }
+      try {
+         val c=bucket.get(path)
+         if(c!=null) return Found2(true,st.get(c.blobId).getContent())
+         return Found2(false,ByteArray(0))
+      } catch (e: Exception) {
+         loggerk.error { "error findMp3 $path" }
+         loggerk.error { e }
+         return Found2(false, ByteArray(0))
+      }
+   }
+
    fun storeInCache(sNameFile:String,sContent:String):Long{
        val i=  bucket.create(sNameFile,sContent.toByteArray())
        if(i==null) loggerk.error{" NULL in create bucked  $sNameFile"}
@@ -98,5 +128,31 @@ class KCache(){
       //setup()
    }
 
+   fun  deleteArticles(handler:String){
+      val fName=getNewsPaperByKey(handler).getGoogleArticlesDir()
+      val bl=bucket.list()
+      for(b in bl.values){
+         if(b.name?.contains(fName) == true)
+            if(b.name?.equals(fName)==false)
+               st.delete(b.blobId)
+      }
+      //setup()
+   }
+
+   fun  deleteArticle(handlerchapt:List<String>){
+      val handler=handlerchapt[0]
+      val nchapt=handlerchapt[1]
+      val fName="${getNewsPaperByKey(handler).getGoogleArticlesDir()}$nchapt"
+      val bl=bucket.list()
+      for(b in bl.values){
+         if(b.name?.contains(fName) == true)
+            if(b.name?.equals(fName)==false)
+               st.delete(b.blobId)
+      }
+      //setup()
+   }
+
 
 }
+
+// Max 117 158
