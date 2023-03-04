@@ -22,6 +22,7 @@ object CNV : IBook{
             KArticle("Els numeros","1"),
             KArticle("El temps cronologic","2"),
             KArticle("Les posicions en l'espai","3")
+
        )
 
     }

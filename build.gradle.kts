@@ -1,7 +1,7 @@
 plugins {
-    id("com.github.ben-manes.versions") version "0.42.0"
+    id("com.github.ben-manes.versions") version "0.46.0"
     `java-library`
-    kotlin("jvm") version "1.6.10"
+    kotlin("jvm") version "1.7.20"
    // kotlin("plugin.serialization") version "1.5.21"
 }
 
@@ -26,7 +26,7 @@ version = "1.0"
 dependencies {
     //implementation(platform("com.begemot.knewsplatform-bom:deps:0.0.1"))
     implementation(platform("com.begemota:sharedlibrary"))
-    implementation("com.begemot:knewscommon")
+    implementation("com.begemot:KNewsCommon")
     implementation("org.jetbrains.kotlin:kotlin-stdlib")
 
     implementation("org.jsoup:jsoup")
@@ -34,6 +34,9 @@ dependencies {
     implementation("com.google.cloud:google-cloud-storage")
     //implementation( "ch.qos.logback:logback-classic")
     implementation("io.github.microutils:kotlin-logging-jvm")
+    //implementation(project(mapOf("path" to ":")))
+    //implementation(project(mapOf("path" to ":")))
+    //implementation(project(mapOf("path" to ":")))
 }
 
 tasks {

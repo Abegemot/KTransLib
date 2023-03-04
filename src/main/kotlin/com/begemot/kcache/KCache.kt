@@ -2,13 +2,13 @@ package com.begemot.kcache
 
 import com.begemot.knewscommon.Found
 import com.begemot.knewscommon.Found2
+import com.begemot.knewscommon.KResult
 import com.begemot.knewscommon.StoredElement
 import com.begemot.translib.getNewsPaperByKey
-import com.google.cloud.storage.BlobId
 import com.google.cloud.storage.StorageOptions
-import com.google.cloud.storage.Blob
+import com.google.cloud.storage.Bucket
+import kotlinx.coroutines.delay
 import mu.KotlinLogging
-import kotlin.system.measureTimeMillis
 
 val loggerk = KotlinLogging.logger {}
 
@@ -18,7 +18,7 @@ class KCache(){
 
    val bucketName="knews1939.appspot.com"
    val st by lazy {  StorageOptions.getDefaultInstance().service }
-   val bucket by lazy { st.get(bucketName) }
+   private val bucket: Bucket by lazy { st.get(bucketName) }
 
 
    fun dateFile(sNameFile: String):Long {
@@ -72,6 +72,13 @@ class KCache(){
       }
    }
 
+
+   fun fileSize(sPath:String):Long{
+      val c=bucket.get(sPath)
+      if(c==null) return 0
+      return c.size
+   }
+
    fun storeInCache(sNameFile:String,sContent:String):Long{
        val i=  bucket.create(sNameFile,sContent.toByteArray())
        if(i==null) loggerk.error{" NULL in create bucked  $sNameFile"}
@@ -89,6 +96,16 @@ class KCache(){
         //? b.deleteTime
       }
       return lSE
+   }
+
+   fun deleteFileSiblings(sPath:String){
+      val bl=bucket.list()
+      for(b in bl.values){
+         if(b.name?.contains(sPath) == true && b.name?.equals(sPath)!=true ){
+            loggerk.error  { "XMremoving ${b.name}  sPath=$sPath" }
+            st.delete(b.blobId)
+         }
+      }
    }
 
    fun deleteFiles(){

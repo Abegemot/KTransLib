@@ -1,5 +1,6 @@
 package com.begemot.translib
 
+import com.begemot.kcache.KCache
 import com.begemot.knewscommon.*
 import kotlinx.coroutines.*
 import mu.KotlinLogging
@@ -19,6 +20,11 @@ fun getOlang(namepaper: String):String{
 
 fun getOriginalHeadLines(namepaper:String):List<KArticle>{
     val iNewsPaper= MBAPE.P[namepaper] ?: throw Exception(" Wrong news paper name!! : $namepaper")
+    if(iNewsPaper.handler.equals("TXS")){
+    //    val sbookname=iNewsPaper.getGoogleFullPath() //"Books/${iNewsPaper.googleDir}/${iNewsPaper.handler}"
+        val sbookname=iNewsPaper.getGoogleHeadLinesDir()
+        return fromJStr<List<KArticle>>( KCache().findInCache(sbookname).sresult)
+    }
     return iNewsPaper.getOriginalHeadLines()
 }
 

@@ -7,6 +7,7 @@ dependencyResolutionManagement {
         mavenLocal()
     }
     includeBuild("H:/prg/KnewsPlatform2")
+    includeBuild("../KNewsCommon")
 }
 rootProject.name = "KTransLib"
 
