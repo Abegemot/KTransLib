@@ -1,7 +1,7 @@
 plugins {
     id("com.github.ben-manes.versions") version "0.46.0"
     `java-library`
-    kotlin("jvm") version "1.7.20"
+    kotlin("jvm") version "1.8.21"
    // kotlin("plugin.serialization") version "1.5.21"
 }
 
@@ -22,6 +22,9 @@ version = "1.0"
     //maven { url = uri("https://kotlin.bintray.com/ktor") }
 }*/
 
+kotlin{
+    jvmToolchain(8)
+}
 
 dependencies {
     //implementation(platform("com.begemot.knewsplatform-bom:deps:0.0.1"))

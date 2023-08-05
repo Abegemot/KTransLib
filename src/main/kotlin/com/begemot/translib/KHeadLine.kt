@@ -39,7 +39,7 @@ suspend fun getTranslatedHeadLines(namepaper:String, tlang:String):List<Original
 
 suspend fun translateHeadLines(lA:List<KArticle>, olang: String, tlang: String):List<OriginalTransLink>{
     logger.debug{"translate HeadLines nArticles=${lA.size} "}
-    if(lA.isEmpty()) throw Exception("Empty HeadLines!!")
+    if(lA.isEmpty()) return emptyList() //throw Exception("Empty HeadLines!!")
     if(olang.equals(tlang)){
         val lOTL= mutableListOf<OriginalTransLink>()
         lA.forEach {

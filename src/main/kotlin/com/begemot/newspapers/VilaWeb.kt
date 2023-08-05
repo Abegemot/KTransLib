@@ -24,7 +24,7 @@ object VW :INewsPaper {
             return KArticle(el.text(),el.attr("abs:href"))
         }
         val doc=Jsoup.connect(url).get()
-        var art=doc.select("a.u-url.stretched-link")
+        var art=doc.select("a[href]")
         val l1=art.map{it->transTwo(it)}.filter {
             it.link.contains("noticies") //   .substringBeforeLast("/").last().isDigit()
                     &&
@@ -32,7 +32,7 @@ object VW :INewsPaper {
         }
         //logger.debug{l1.print()}
         logger.debug { "NArticles=${l1.size}" }
-        return l1
+        return l1.distinctBy { it->it.link }
     }
 
     override fun getOriginalArticle(link: String): String {
